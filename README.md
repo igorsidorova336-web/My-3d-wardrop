@@ -127,7 +127,7 @@
         <span>🪙</span> <span id="coinCount">0</span>
     </div>
     <div id="status">👤 Персонаж</div>
-    <div id="clickEffect">+1 🪙</div>
+    <div id="clickEffect">+0.5 🪙</div>
     <button id="menuToggle">👕</button>
     <div id="wardrobeMenu">
         <div class="menu-header">
