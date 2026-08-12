@@ -7,7 +7,6 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { overflow: hidden; font-family: Arial; background: #1a1a2e; user-select: none; -webkit-tap-highlight-color: transparent; }
-
         #coinCounter {
             position: absolute;
             top: 15px;
