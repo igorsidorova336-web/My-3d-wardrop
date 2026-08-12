@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+   <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -19,7 +19,7 @@
             color: #ffd700;
             font-size: 20px;
             font-weight: bold;
-            display: flex;
+         display: flex;
             align-items: center;
             gap: 8px;
             z-index: 15;
@@ -29,7 +29,6 @@
         #coinCounter span {
             font-size: 22px;
         }
-
         #status {
             position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
             color: white; background: rgba(0,0,0,0.6); padding: 8px 20px;
@@ -37,7 +36,6 @@
             border: 1px solid rgba(255,255,255,0.1); pointer-events: none; z-index: 10;
             white-space: nowrap;
         }
-
         #clickEffect {
             position: absolute;
             color: #ffd700;
@@ -49,7 +47,6 @@
             transition: none;
             text-shadow: 0 0 20px rgba(255,215,0,0.6);
         }
-
         #menuToggle {
             position: absolute; bottom: 130px; right: 20px;
             background: rgba(52,152,219,0.8); backdrop-filter: blur(10px);
@@ -59,7 +56,6 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.4); transition: all 0.3s;
         }
         #menuToggle:active { transform: scale(0.9); }
-
         #wardrobeMenu {
             position: absolute; bottom: -100%; left: 0; width: 100%;
             background: rgba(20,20,40,0.95); backdrop-filter: blur(20px);
@@ -71,7 +67,6 @@
         #wardrobeMenu.open { bottom: 0; }
         #wardrobeMenu::-webkit-scrollbar { width: 3px; }
         #wardrobeMenu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
-
         .menu-header {
             display: flex; justify-content: space-between; align-items: center;
             color: white; margin-bottom: 15px; padding-bottom: 10px;
@@ -106,7 +101,6 @@
         }
         .color-dot:active { transform: scale(0.85); }
         .color-dot.active { border-color: #3498db; transform: scale(1.1); box-shadow: 0 0 20px rgba(52,152,219,0.3); }
-
         #info {
             position: absolute; bottom: 10px; left: 0; width: 100%;
             text-align: center; color: rgba(255,255,255,0.3); font-size: 11px;
@@ -118,7 +112,6 @@
             text-align: center;
             background: rgba(0,0,0,0.2); padding: 4px 14px; border-radius: 12px;
         }
-
         @media (max-width: 500px) {
             #menuToggle { bottom: 110px; right: 15px; width: 54px; height: 54px; font-size: 24px; }
             #wardrobeMenu { padding: 16px 12px 24px; max-height: 60vh; }
@@ -130,17 +123,12 @@
     </style>
 </head>
 <body>
-
     <div id="coinCounter">
         <span>🪙</span> <span id="coinCount">0</span>
     </div>
-
     <div id="status">👤 Персонаж</div>
-
     <div id="clickEffect">+1 🪙</div>
-
     <button id="menuToggle">👕</button>
-
     <div id="wardrobeMenu">
         <div class="menu-header">
             <h3>👗 Гардероб</h3>
@@ -195,10 +183,8 @@
             </div>
         </div>
     </div>
-
     <div id="clickHint">👆 Нажми на персонажа — получи монету!</div>
     <div id="info">Потяни пальцем → вращать</div>
-
     <script type="importmap">
         {
             "imports": {
@@ -207,18 +193,14 @@
             }
         }
     </script>
-
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
         // ---- СЦЕНА ----
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x1a1a2e);
-
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.set(2, 1.5, 4);
-
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -226,7 +208,6 @@
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.2;
         document.body.appendChild(renderer.domElement);
-
         // ---- УПРАВЛЕНИЕ ----
         const controls = new OrbitControls(camera, renderer.domElement);
         controls.target.set(0, 0.8, 0);
@@ -235,7 +216,6 @@
         controls.minDistance = 1.5;
         controls.maxDistance = 8;
         controls.update();
-
         // ---- СВЕТ ----
         const ambient = new THREE.AmbientLight(0x404060, 0.5);
         scene.add(ambient);
@@ -249,7 +229,6 @@
         const back = new THREE.DirectionalLight(0xff8844, 0.3);
         back.position.set(0, 0.5, -4);
         scene.add(back);
-
         // ---- ПОЛ ----
         const plane = new THREE.Mesh(
             new THREE.CircleGeometry(2.5, 20),
@@ -259,10 +238,8 @@
         plane.position.y = -0.1;
         plane.receiveShadow = true;
         scene.add(plane);
-
         // ---- ПЕРСОНАЖ ----
         const character = new THREE.Group();
-
         const body = new THREE.Mesh(
             new THREE.BoxGeometry(0.5, 0.7, 0.3),
             new THREE.MeshStandardMaterial({ color: 0x3498db, roughness: 0.4, metalness: 0.1 })
@@ -270,7 +247,6 @@
         body.position.y = 0.35;
         body.castShadow = true;
         character.add(body);
-
         const head = new THREE.Mesh(
             new THREE.SphereGeometry(0.25, 16, 16),
             new THREE.MeshStandardMaterial({ color: 0xf5cba7, roughness: 0.3 })
@@ -278,7 +254,6 @@
         head.position.y = 0.9;
         head.castShadow = true;
         character.add(head);
-
         // Глаза
         const eyeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
         const pupilMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e });
@@ -294,7 +269,6 @@
         const pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), pupilMat);
         pupilR.position.set(0.1, 0.95, 0.27);
         character.add(pupilR);
-
         // Руки
         const armMat = new THREE.MeshStandardMaterial({ color: 0xf5cba7, roughness: 0.4 });
         const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 0.45, 8), armMat);
@@ -309,7 +283,6 @@
         armR.rotation.x = 0.3;
         armR.castShadow = true;
         character.add(armR);
-
         // Ноги
         const legMat = new THREE.MeshStandardMaterial({ color: 0x2c3e50, roughness: 0.6 });
         const legL = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 0.35, 8), legMat);
@@ -320,8 +293,7 @@
         legR.position.set(0.13, 0.0, 0);
         legR.castShadow = true;
         character.add(legR);
-
-        // Обувь
+      // Обувь
         const shoeMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e, roughness: 0.8 });
         const shoeL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.05, 0.18), shoeMat);
         shoeL.position.set(-0.13, -0.2, 0.04);
@@ -331,7 +303,6 @@
         shoeR.position.set(0.13, -0.2, 0.04);
         shoeR.castShadow = true;
         character.add(shoeR);
-
         // Шляпа
         const hatGroup = new THREE.Group();
         const hatBase = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.35, 0.06, 12), new THREE.MeshStandardMaterial({ color: 0x8B0000 }));
@@ -343,8 +314,7 @@
         hatGroup.position.y = 1.05;
         hatGroup.visible = false;
         character.add(hatGroup);
-
-        // Очки
+       // Очки
         const glassesGroup = new THREE.Group();
         const glassMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e, metalness: 0.8 });
         const glassL2 = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.025, 8, 12), glassMat);
@@ -357,7 +327,6 @@
         glassesGroup.add(glassR2);
         glassesGroup.visible = false;
         character.add(glassesGroup);
-
         // Бабочка
         const bowtieGroup = new THREE.Group();
         const bowMat = new THREE.MeshStandardMaterial({ color: 0xe74c3c });
@@ -369,30 +338,24 @@
         bowtieGroup.add(bowR2);
         bowtieGroup.visible = false;
         character.add(bowtieGroup);
-
         character.position.y = 0;
         scene.add(character);
-
         // ---- СЧЁТЧИК МОНЕТ ----
         let coins = 0;
         const coinDisplay = document.getElementById('coinCount');
         const clickEffect = document.getElementById('clickEffect');
-
-        function addCoin(event) {
+       function addCoin(event) {
             coins++;
             coinDisplay.textContent = coins;
-
             // Анимация +1
             const rect = renderer.domElement.getBoundingClientRect();
             const x = event.clientX || event.touches?.[0]?.clientX || window.innerWidth/2;
             const y = event.clientY || event.touches?.[0]?.clientY || window.innerHeight/2;
-
             clickEffect.style.left = (x - 30) + 'px';
             clickEffect.style.top = (y - 30) + 'px';
             clickEffect.style.opacity = 1;
             clickEffect.style.transform = 'scale(1)';
             clickEffect.textContent = '+1 🪙';
-
             // Анимация вверх и исчезновение
             let startY = y - 30;
             let opacity = 1;
@@ -407,36 +370,30 @@
                 }
             }, 20);
         }
-
         // ---- ОБРАБОТЧИКИ НАЖАТИЙ ----
         // Нажатие на персонажа (через Raycaster)
         const raycaster = new THREE.Raycaster();
         const pointer = new THREE.Vector2();
-
         function onPointerDown(event) {
             const clientX = event.clientX || event.touches?.[0]?.clientX;
             const clientY = event.clientY || event.touches?.[0]?.clientY;
             if (clientX === undefined) return;
-
             const rect = renderer.domElement.getBoundingClientRect();
             pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
             pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
 
-            raycaster.setFromCamera(pointer, camera);
+raycaster.setFromCamera(pointer, camera);
             const intersects = raycaster.intersectObjects(character.children, true);
-
             if (intersects.length > 0) {
                 addCoin(event);
                 // Небольшая вибрация (если поддерживается)
                 if (navigator.vibrate) navigator.vibrate(20);
             }
         }
-
         // Наведение мыши (для ПК) — по клику
         renderer.domElement.addEventListener('click', onPointerDown);
         // Для телефона — касание
         renderer.domElement.addEventListener('touchstart', onPointerDown, { passive: true });
-
         // ---- КНОПКИ ГАРДЕРОБА ----
         document.querySelectorAll('#skinColors .color-dot').forEach(dot => {
             dot.onclick = () => {
@@ -450,7 +407,6 @@
                 setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 1000);
             };
         });
-
         document.querySelectorAll('#shirts .item-btn').forEach(btn => {
             btn.onclick = () => {
                 document.querySelectorAll('#shirts .item-btn').forEach(b => b.classList.remove('active'));
@@ -460,7 +416,6 @@
                 setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 1000);
             };
         });
-
         document.querySelectorAll('#pants .item-btn').forEach(btn => {
             btn.onclick = () => {
                 document.querySelectorAll('#pants .item-btn').forEach(b => b.classList.remove('active'));
@@ -472,7 +427,6 @@
                 setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 1000);
             };
         });
-
         document.querySelectorAll('#shoes .item-btn').forEach(btn => {
             btn.onclick = () => {
                 document.querySelectorAll('#shoes .item-btn').forEach(b => b.classList.remove('active'));
@@ -484,7 +438,6 @@
                 setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 1000);
             };
         });
-
         document.querySelectorAll('#accessories .item-btn').forEach(btn => {
             btn.onclick = () => {
                 const type = btn.dataset.accessory;
@@ -504,7 +457,6 @@
                 setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 1200);
             };
         });
-
         // ---- МЕНЮ ----
         const menu = document.getElementById('wardrobeMenu');
         document.getElementById('menuToggle').onclick = () => {
@@ -515,14 +467,12 @@
             menu.classList.remove('open');
             document.getElementById('menuToggle').textContent = '👕';
         };
-
         // ---- АДАПТАЦИЯ ----
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
         // ---- АНИМАЦИЯ ----
         function animate() {
             requestAnimationFrame(animate);
@@ -530,7 +480,6 @@
             renderer.render(scene, camera);
         }
         animate();
-
         setTimeout(() => {
             document.getElementById('status').textContent = '👆 Нажми на персонажа!';
             setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 3000);
