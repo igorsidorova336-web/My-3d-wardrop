@@ -1,34 +1,22 @@
-   <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>3D Гардероб + Монеты</title>
+    <title>Крутка Кейсов</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { overflow: hidden; font-family: Arial; background: #1a1a2e; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { overflow: hidden; font-family: Arial; background: #0f0f1a; user-select: none; -webkit-tap-highlight-color: transparent; color: white; }
         #coinCounter {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
-            padding: 10px 18px 10px 14px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,215,0,0.3);
-            color: #ffd700;
-            font-size: 20px;
-            font-weight: bold;
-         display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 15;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            position: absolute; top: 15px; left: 15px;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(10px);
+            padding: 10px 20px; border-radius: 30px;
+            border: 2px solid rgba(255,215,0,0.4);
+            color: #ffd700; font-size: 22px; font-weight: bold;
+            display: flex; align-items: center; gap: 8px; z-index: 15;
             pointer-events: none;
         }
-        #coinCounter span {
-            font-size: 22px;
-        }
+        #coinCounter span { font-size: 24px; }
         #status {
             position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
             color: white; background: rgba(0,0,0,0.6); padding: 8px 20px;
@@ -36,37 +24,106 @@
             border: 1px solid rgba(255,255,255,0.1); pointer-events: none; z-index: 10;
             white-space: nowrap;
         }
-        #clickEffect {
-            position: absolute;
-            color: #ffd700;
-            font-size: 28px;
-            font-weight: bold;
-            pointer-events: none;
-            z-index: 20;
-            opacity: 0;
-            transition: none;
-            text-shadow: 0 0 20px rgba(255,215,0,0.6);
+        /* ---- КЕЙСЫ ---- */
+        #cases {
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; gap: 20px; flex-wrap: wrap; padding: 20px;
+            overflow-y: auto;
         }
-        #menuToggle {
-            position: absolute; bottom: 130px; right: 20px;
-            background: rgba(52,152,219,0.8); backdrop-filter: blur(10px);
+        .case {
+            width: 160px; height: 220px;
+            background: linear-gradient(145deg, #1e1e3a, #2a2a4a);
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 12px; cursor: pointer;
+            transition: all 0.3s; touch-action: manipulation;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .case:active { transform: scale(0.95); }
+        .case:hover { border-color: rgba(255,215,0,0.5); }
+        .case .case-emoji { font-size: 60px; }
+        .case .case-name { font-size: 16px; font-weight: bold; }
+        .case .case-price { font-size: 18px; color: #ffd700; font-weight: bold; }
+        .case .case-rarity { font-size: 12px; opacity: 0.6; }
+        .case .case-glow {
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,215,0,0.1), transparent 70%);
+            pointer-events: none;
+        }
+        /* ---- РУЛЕТКА ---- */
+        #rouletteContainer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(20px);
+            z-index: 100; display: none; justify-content: center; align-items: center;
+            flex-direction: column;
+        }
+        #rouletteContainer.active { display: flex; }
+        #rouletteWindow {
+            width: 90%; max-width: 500px; height: 120px;
+            background: #1a1a2e; border-radius: 15px;
+            border: 2px solid rgba(255,215,0,0.3);
+            overflow: hidden; position: relative;
+        }
+        #rouletteTrack {
+            display: flex; position: absolute; top: 0; left: 0;
+            height: 100%; align-items: center;
+            transition: transform 6s cubic-bezier(0.1, 0.8, 0.1, 1);
+        }
+        .roulette-item {
+            flex: 0 0 100px; height: 80px;
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 4px;
+            background: rgba(255,255,255,0.05); margin: 0 5px;
+            border-radius: 10px; border: 2px solid rgba(255,255,255,0.1);
+        }
+        .roulette-item .item-emoji { font-size: 30px; }
+        .roulette-item .item-name { font-size: 10px; text-align: center; }
+        .roulette-item.rare { border-color: #3498db; background: rgba(52,152,219,0.1); }
+        .roulette-item.epic { border-color: #9b59b6; background: rgba(155,89,182,0.1); }
+        .roulette-item.legendary { border-color: #ffd700; background: rgba(255,215,0,0.1); }
+        #roulettePointer {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 100%; background: #ffd700;
+            z-index: 5; box-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+        #rouletteResult {
+            margin-top: 30px; text-align: center; display: none;
+        }
+        #rouletteResult.show { display: block; }
+        #rouletteResult .result-emoji { font-size: 80px; }
+        #rouletteResult .result-name { font-size: 24px; font-weight: bold; margin-top: 10px; }
+        #rouletteResult .result-rarity { font-size: 14px; opacity: 0.6; margin-top: 5px; }
+        #rouletteResult .result-btn {
+            margin-top: 20px; padding: 12px 40px; border-radius: 30px;
+            border: none; background: #3498db; color: white;
+            font-size: 18px; font-weight: bold; cursor: pointer;
+            touch-action: manipulation;
+        }
+        #rouletteResult .result-btn:active { transform: scale(0.95); }
+        /* ---- ИНВЕНТАРЬ ---- */
+        #inventoryToggle {
+            position: absolute; bottom: 30px; right: 20px;
+            background: rgba(155,89,182,0.8); backdrop-filter: blur(10px);
             border: 1px solid rgba(255,255,255,0.2); color: white;
             width: 60px; height: 60px; border-radius: 50%; font-size: 28px;
             cursor: pointer; z-index: 20; touch-action: manipulation;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4); transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
-        #menuToggle:active { transform: scale(0.9); }
-        #wardrobeMenu {
+        #inventoryToggle:active { transform: scale(0.9); }
+        #inventoryMenu {
             position: absolute; bottom: -100%; left: 0; width: 100%;
-            background: rgba(20,20,40,0.95); backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255,255,255,0.1);
+            background: rgba(20,20,40,0.98); backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(155,89,182,0.3);
             padding: 20px 16px 30px; z-index: 30;
             transition: bottom 0.4s cubic-bezier(0.4,0,0.2,1);
             max-height: 65vh; overflow-y: auto; border-radius: 20px 20px 0 0;
         }
-        #wardrobeMenu.open { bottom: 0; }
-        #wardrobeMenu::-webkit-scrollbar { width: 3px; }
-        #wardrobeMenu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        #inventoryMenu.open { bottom: 0; }
+        #inventoryMenu::-webkit-scrollbar { width: 3px; }
+        #inventoryMenu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
         .menu-header {
             display: flex; justify-content: space-between; align-items: center;
             color: white; margin-bottom: 15px; padding-bottom: 10px;
@@ -79,46 +136,51 @@
             cursor: pointer; touch-action: manipulation;
         }
         .menu-close:active { transform: scale(0.9); }
-        .category { margin-bottom: 16px; }
-        .category-title {
-            color: rgba(255,255,255,0.6); font-size: 12px;
-            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;
+        .inventory-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 14px; margin-bottom: 6px;
+            background: rgba(255,255,255,0.05); border-radius: 12px;
+            border-left: 3px solid #ffd700;
         }
-        .items { display: flex; gap: 10px; flex-wrap: wrap; }
-        .item-btn {
-            background: rgba(255,255,255,0.08); border: 2px solid transparent;
-            color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px;
-            cursor: pointer; transition: all 0.2s; touch-action: manipulation;
-            user-select: none; white-space: nowrap;
+        .inventory-item .info { display: flex; align-items: center; gap: 10px; }
+        .inventory-item .emoji { font-size: 28px; }
+        .inventory-item .name { font-size: 14px; }
+        .inventory-item .rarity { font-size: 11px; opacity: 0.6; }
+        .inventory-item .sell-btn {
+            background: rgba(46,204,113,0.2); border: 1px solid #2ecc71;
+            color: white; padding: 6px 14px; border-radius: 20px;
+            font-size: 12px; cursor: pointer; touch-action: manipulation;
         }
-        .item-btn:active { transform: scale(0.92); }
-        .item-btn.active { border-color: #3498db; background: rgba(52,152,219,0.25); }
-        .color-picker { display: flex; gap: 8px; flex-wrap: wrap; }
-        .color-dot {
-            width: 36px; height: 36px; border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.2); cursor: pointer;
-            transition: all 0.2s; touch-action: manipulation;
+        .inventory-item .sell-btn:active { transform: scale(0.9); }
+        .inventory-item.rare { border-left-color: #3498db; }
+        .inventory-item.epic { border-left-color: #9b59b6; }
+        .inventory-item.legendary { border-left-color: #ffd700; }
+        #emptyInventory {
+            text-align: center; color: rgba(255,255,255,0.4); padding: 30px;
+            font-size: 14px;
         }
-        .color-dot:active { transform: scale(0.85); }
-        .color-dot.active { border-color: #3498db; transform: scale(1.1); box-shadow: 0 0 20px rgba(52,152,219,0.3); }
+        /* ---- РЕДКОСТЬ ---- */
+        .rarity-common { color: #95a5a6; }
+        .rarity-rare { color: #3498db; }
+        .rarity-epic { color: #9b59b6; }
+        .rarity-legendary { color: #ffd700; }
+        /* ---- ПРОЧЕЕ ---- */
         #info {
             position: absolute; bottom: 10px; left: 0; width: 100%;
-            text-align: center; color: rgba(255,255,255,0.3); font-size: 11px;
+            text-align: center; color: rgba(255,255,255,0.2); font-size: 11px;
             pointer-events: none; z-index: 5;
         }
-        #clickHint {
-            position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
-            color: rgba(255,255,255,0.2); font-size: 12px; pointer-events: none; z-index: 5;
-            text-align: center;
-            background: rgba(0,0,0,0.2); padding: 4px 14px; border-radius: 12px;
-        }
         @media (max-width: 500px) {
-            #menuToggle { bottom: 110px; right: 15px; width: 54px; height: 54px; font-size: 24px; }
-            #wardrobeMenu { padding: 16px 12px 24px; max-height: 60vh; }
-            .item-btn { padding: 6px 12px; font-size: 12px; }
-            .color-dot { width: 30px; height: 30px; }
-            #coinCounter { font-size: 16px; padding: 6px 12px 6px 10px; top: 10px; left: 10px; }
+            .case { width: 130px; height: 180px; }
+            .case .case-emoji { font-size: 45px; }
+            .case .case-name { font-size: 14px; }
+            .case .case-price { font-size: 16px; }
+            #inventoryToggle { bottom: 20px; right: 15px; width: 54px; height: 54px; font-size: 24px; }
+            #coinCounter { font-size: 16px; padding: 6px 14px; top: 10px; left: 10px; }
             #coinCounter span { font-size: 18px; }
+            #status { font-size: 11px; padding: 6px 14px; }
+            .inventory-item .name { font-size: 12px; }
+            .inventory-item .sell-btn { font-size: 11px; padding: 4px 10px; }
         }
     </style>
 </head>
@@ -126,368 +188,230 @@
     <div id="coinCounter">
         <span>🪙</span> <span id="coinCount">0</span>
     </div>
-    <div id="status">👤 Персонаж</div>
-    <div id="clickEffect">+1 🪙</div>
-    <button id="menuToggle">👕</button>
-    <div id="wardrobeMenu">
-        <div class="menu-header">
-            <h3>👗 Гардероб</h3>
-            <button class="menu-close" id="closeMenu">✕</button>
+    <div id="status">🎰 Выбери кейс</div>
+    <!-- КЕЙСЫ -->
+    <div id="cases">
+        <!-- Кейсы будут добавлены через JS -->
+    </div>
+    <!-- РУЛЕТКА -->
+    <div id="rouletteContainer">
+        <div id="rouletteWindow">
+            <div id="roulettePointer"></div>
+            <div id="rouletteTrack"></div>
         </div>
-        <div class="category">
-            <div class="category-title">🎨 Цвет кожи</div>
-            <div class="color-picker" id="skinColors">
-                <div class="color-dot active" style="background:#f5cba7;" data-color="#f5cba7"></div>
-                <div class="color-dot" style="background:#ffcc99;" data-color="#ffcc99"></div>
-                <div class="color-dot" style="background:#8D6E63;" data-color="#8D6E63"></div>
-                <div class="color-dot" style="background:#D7A86E;" data-color="#D7A86E"></div>
-                <div class="color-dot" style="background:#e8b4b4;" data-color="#e8b4b4"></div>
-            </div>
-        </div>
-        <div class="category">
-            <div class="category-title">👕 Футболки</div>
-            <div class="items" id="shirts">
-                <button class="item-btn active" data-shirt="#3498db">🔵 Синяя</button>
-                <button class="item-btn" data-shirt="#e74c3c">🔴 Красная</button>
-                <button class="item-btn" data-shirt="#2ecc71">🟢 Зелёная</button>
-                <button class="item-btn" data-shirt="#f1c40f">🟡 Жёлтая</button>
-                <button class="item-btn" data-shirt="#9b59b6">🟣 Фиолетовая</button>
-                <button class="item-btn" data-shirt="#e67e22">🟠 Оранжевая</button>
-            </div>
-        </div>
-        <div class="category">
-            <div class="category-title">👖 Штаны</div>
-            <div class="items" id="pants">
-                <button class="item-btn active" data-pants="#2c3e50">⚫ Тёмные</button>
-                <button class="item-btn" data-pants="#34495e">🔵 Синие</button>
-                <button class="item-btn" data-pants="#7f8c8d">⚪ Серые</button>
-                <button class="item-btn" data-pants="#8B0000">🔴 Бордовые</button>
-                <button class="item-btn" data-pants="#228B22">🟢 Хаки</button>
-            </div>
-        </div>
-        <div class="category">
-            <div class="category-title">👟 Обувь</div>
-            <div class="items" id="shoes">
-                <button class="item-btn active" data-shoes="#1a1a2e">⚫ Чёрные</button>
-                <button class="item-btn" data-shoes="#8B4513">🟤 Коричневые</button>
-                <button class="item-btn" data-shoes="#ffffff">⚪ Белые</button>
-                <button class="item-btn" data-shoes="#c0392b">🔴 Красные</button>
-            </div>
-        </div>
-        <div class="category">
-            <div class="category-title">🧢 Аксессуары</div>
-            <div class="items" id="accessories">
-                <button class="item-btn" data-accessory="hat">🧢 Шляпа</button>
-                <button class="item-btn" data-accessory="glasses">👓 Очки</button>
-                <button class="item-btn" data-accessory="bowtie">🎀 Бабочка</button>
-            </div>
+        <div id="rouletteResult">
+            <div class="result-emoji">🎁</div>
+            <div class="result-name">Приз</div>
+            <div class="result-rarity">Обычный</div>
+            <button class="result-btn" id="resultBtn">Забрать</button>
         </div>
     </div>
-    <div id="clickHint">👆 Нажми на персонажа — получи монету!</div>
-    <div id="info">Потяни пальцем → вращать</div>
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-            }
-        }
-    </script>
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        // ---- СЦЕНА ----
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x1a1a2e);
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(2, 1.5, 4);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.2;
-        document.body.appendChild(renderer.domElement);
-        // ---- УПРАВЛЕНИЕ ----
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.target.set(0, 0.8, 0);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.08;
-        controls.minDistance = 1.5;
-        controls.maxDistance = 8;
-        controls.update();
-        // ---- СВЕТ ----
-        const ambient = new THREE.AmbientLight(0x404060, 0.5);
-        scene.add(ambient);
-        const main = new THREE.DirectionalLight(0xffeedd, 1.5);
-        main.position.set(3, 5, 4);
-        main.castShadow = true;
-        scene.add(main);
-        const fill = new THREE.DirectionalLight(0x4488ff, 0.4);
-        fill.position.set(-2, 1, -3);
-        scene.add(fill);
-        const back = new THREE.DirectionalLight(0xff8844, 0.3);
-        back.position.set(0, 0.5, -4);
-        scene.add(back);
-        // ---- ПОЛ ----
-        const plane = new THREE.Mesh(
-            new THREE.CircleGeometry(2.5, 20),
-            new THREE.MeshStandardMaterial({ color: 0x2a2a4a, transparent: true, opacity: 0.4, roughness: 0.7, side: THREE.DoubleSide })
-        );
-        plane.rotation.x = -Math.PI / 2;
-        plane.position.y = -0.1;
-        plane.receiveShadow = true;
-        scene.add(plane);
-        // ---- ПЕРСОНАЖ ----
-        const character = new THREE.Group();
-        const body = new THREE.Mesh(
-            new THREE.BoxGeometry(0.5, 0.7, 0.3),
-            new THREE.MeshStandardMaterial({ color: 0x3498db, roughness: 0.4, metalness: 0.1 })
-        );
-        body.position.y = 0.35;
-        body.castShadow = true;
-        character.add(body);
-        const head = new THREE.Mesh(
-            new THREE.SphereGeometry(0.25, 16, 16),
-            new THREE.MeshStandardMaterial({ color: 0xf5cba7, roughness: 0.3 })
-        );
-        head.position.y = 0.9;
-        head.castShadow = true;
-        character.add(head);
-        // Глаза
-        const eyeMat = new THREE.MeshStandardMaterial({ color: 0xffffff });
-        const pupilMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e });
-        const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), eyeMat);
-        eyeL.position.set(-0.1, 0.95, 0.22);
-        character.add(eyeL);
-        const pupilL = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), pupilMat);
-        pupilL.position.set(-0.1, 0.95, 0.27);
-        character.add(pupilL);
-        const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 8), eyeMat);
-        eyeR.position.set(0.1, 0.95, 0.22);
-        character.add(eyeR);
-        const pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 8), pupilMat);
-        pupilR.position.set(0.1, 0.95, 0.27);
-        character.add(pupilR);
-        // Руки
-        const armMat = new THREE.MeshStandardMaterial({ color: 0xf5cba7, roughness: 0.4 });
-        const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 0.45, 8), armMat);
-        armL.position.set(-0.32, 0.6, 0);
-        armL.rotation.z = 0.3;
-        armL.rotation.x = -0.3;
-        armL.castShadow = true;
-        character.add(armL);
-        const armR = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.07, 0.45, 8), armMat);
-        armR.position.set(0.32, 0.6, 0);
-        armR.rotation.z = -0.3;
-        armR.rotation.x = 0.3;
-        armR.castShadow = true;
-        character.add(armR);
-        // Ноги
-        const legMat = new THREE.MeshStandardMaterial({ color: 0x2c3e50, roughness: 0.6 });
-        const legL = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 0.35, 8), legMat);
-        legL.position.set(-0.13, 0.0, 0);
-        legL.castShadow = true;
-        character.add(legL);
-        const legR = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 0.35, 8), legMat);
-        legR.position.set(0.13, 0.0, 0);
-        legR.castShadow = true;
-        character.add(legR);
-      // Обувь
-        const shoeMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e, roughness: 0.8 });
-        const shoeL = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.05, 0.18), shoeMat);
-        shoeL.position.set(-0.13, -0.2, 0.04);
-        shoeL.castShadow = true;
-        character.add(shoeL);
-        const shoeR = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.05, 0.18), shoeMat);
-        shoeR.position.set(0.13, -0.2, 0.04);
-        shoeR.castShadow = true;
-        character.add(shoeR);
-        // Шляпа
-        const hatGroup = new THREE.Group();
-        const hatBase = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.35, 0.06, 12), new THREE.MeshStandardMaterial({ color: 0x8B0000 }));
-        hatBase.position.y = 0.05;
-        hatGroup.add(hatBase);
-        const hatTop = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.2, 12), new THREE.MeshStandardMaterial({ color: 0x8B0000 }));
-        hatTop.position.y = 0.2;
-        hatGroup.add(hatTop);
-        hatGroup.position.y = 1.05;
-        hatGroup.visible = false;
-        character.add(hatGroup);
-       // Очки
-        const glassesGroup = new THREE.Group();
-        const glassMat = new THREE.MeshStandardMaterial({ color: 0x1a1a2e, metalness: 0.8 });
-        const glassL2 = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.025, 8, 12), glassMat);
-        glassL2.position.set(-0.1, 0.92, 0.22);
-        glassL2.rotation.x = 0.2;
-        glassesGroup.add(glassL2);
-        const glassR2 = new THREE.Mesh(new THREE.TorusGeometry(0.08, 0.025, 8, 12), glassMat);
-        glassR2.position.set(0.1, 0.92, 0.22);
-        glassR2.rotation.x = 0.2;
-        glassesGroup.add(glassR2);
-        glassesGroup.visible = false;
-        character.add(glassesGroup);
-        // Бабочка
-        const bowtieGroup = new THREE.Group();
-        const bowMat = new THREE.MeshStandardMaterial({ color: 0xe74c3c });
-        const bowL2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.04, 0.02), bowMat);
-        bowL2.position.set(-0.05, 0.6, 0.16);
-        bowtieGroup.add(bowL2);
-        const bowR2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.04, 0.02), bowMat);
-        bowR2.position.set(0.05, 0.6, 0.16);
-        bowtieGroup.add(bowR2);
-        bowtieGroup.visible = false;
-        character.add(bowtieGroup);
-        character.position.y = 0;
-        scene.add(character);
-        // ---- СЧЁТЧИК МОНЕТ ----
-        let coins = 0;
+    <!-- ИНВЕНТАРЬ -->
+    <button id="inventoryToggle">🎒</button>
+    <div id="inventoryMenu">
+        <div class="menu-header">
+            <h3>🎒 Инвентарь</h3>
+            <button class="menu-close" id="closeInventory">✕</button>
+        </div>
+        <div id="inventoryList">
+            <div id="emptyInventory">Инвентарь пуст 😢</div>
+        </div>
+        <div style="text-align:center; margin-top:12px; color:rgba(255,255,255,0.3); font-size:11px;">
+            Продавай предметы за монеты!
+        </div>
+    </div>
+    <div id="info">Крути кейсы и собирай скины!</div>
+    <script>
+        // ---- ДАННЫЕ ----
+        const rarities = {
+            common: { name: 'Обычный', color: '#95a5a6', multiplier: 1 },
+            rare: { name: 'Редкий', color: '#3498db', multiplier: 3 },
+            epic: { name: 'Эпический', color: '#9b59b6', multiplier: 8 },
+            legendary: { name: 'Легендарный', color: '#ffd700', multiplier: 20 },
+        };
+        const allItems = [
+            // Обычные (common)
+            { id: 'c1', name: 'Ржавый ключ', emoji: '🔑', rarity: 'common', price: 5 },
+            { id: 'c2', name: 'Старая монета', emoji: '🪙', rarity: 'common', price: 5 },
+            { id: 'c3', name: 'Кусок ткани', emoji: '🧵', rarity: 'common', price: 5 },
+            { id: 'c4', name: 'Деревяшка', emoji: '🪵', rarity: 'common', price: 5 },
+            { id: 'c5', name: 'Камень', emoji: '🪨', rarity: 'common', price: 5 },
+            // Редкие (rare)
+            { id: 'r1', name: 'Серебряный ключ', emoji: '🔑', rarity: 'rare', price: 15 },
+            { id: 'r2', name: 'Синий кристалл', emoji: '💎', rarity: 'rare', price: 15 },
+            { id: 'r3', name: 'Кожаные перчатки', emoji: '🧤', rarity: 'rare', price: 15 },
+            { id: 'r4', name: 'Зелье силы', emoji: '🧪', rarity: 'rare', price: 15 },
+            // Эпические (epic)
+            { id: 'e1', name: 'Золотой ключ', emoji: '🔑', rarity: 'epic', price: 40 },
+            { id: 'e2', name: 'Фиолетовый кристалл', emoji: '💜', rarity: 'epic', price: 40 },
+            { id: 'e3', name: 'Плащ героя', emoji: '🧥', rarity: 'epic', price: 40 },
+            { id: 'e4', name: 'Корона', emoji: '👑', rarity: 'epic', price: 40 },
+            // Легендарные (legendary)
+            { id: 'l1', name: 'Алмазный ключ', emoji: '🔑', rarity: 'legendary', price: 100 },
+            { id: 'l2', name: 'Красный кристалл', emoji: '❤️', rarity: 'legendary', price: 100 },
+            { id: 'l3', name: 'Крылья ангела', emoji: '🪽', rarity: 'legendary', price: 100 },
+            { id: 'l4', name: 'Меч легенд', emoji: '⚔️', rarity: 'legendary', price: 100 },
+        ];
+        const cases = [
+            {
+                id: 'case1',
+                name: 'Бронзовый кейс',
+                emoji: '📦',
+                price: 10,
+                rarity: 'common',
+                chances: { common: 70, rare: 25, epic: 4, legendary: 1 },
+            },
+            {
+                id: 'case2',
+                name: 'Серебряный кейс',
+                emoji: '🎁',
+                price: 30,
+                rarity: 'rare',
+                chances: { common: 40, rare: 40, epic: 15, legendary: 5 },
+            },
+            {
+                id: 'case3',
+                name: 'Золотой кейс',
+                emoji: '🏆',
+                price: 100,
+                rarity: 'epic',
+                chances: { common: 10, rare: 30, epic: 45, legendary: 15 },
+            },
+            {
+                id: 'case4',
+                name: 'Алмазный кейс',
+                emoji: '💎',
+                price: 250,
+                rarity: 'legendary',
+                chances: { common: 0, rare: 15, epic: 50, legendary: 35 },
+            },
+        ];
+        // ---- СОСТОЯНИЕ ----
+        let coins = parseInt(localStorage.getItem('caseCoins')) || 0;
+        let inventory = JSON.parse(localStorage.getItem('caseInventory')) || [];
+        let currentCase = null;
         const coinDisplay = document.getElementById('coinCount');
-        const clickEffect = document.getElementById('clickEffect');
-       function addCoin(event) {
-            coins++;
+        function updateCoins() {
             coinDisplay.textContent = coins;
-            // Анимация +1
-            const rect = renderer.domElement.getBoundingClientRect();
-            const x = event.clientX || event.touches?.[0]?.clientX || window.innerWidth/2;
-            const y = event.clientY || event.touches?.[0]?.clientY || window.innerHeight/2;
-            clickEffect.style.left = (x - 30) + 'px';
-            clickEffect.style.top = (y - 30) + 'px';
-            clickEffect.style.opacity = 1;
-            clickEffect.style.transform = 'scale(1)';
-            clickEffect.textContent = '+1 🪙';
-            // Анимация вверх и исчезновение
-            let startY = y - 30;
-            let opacity = 1;
-            const interval = setInterval(() => {
-                startY -= 3;
-                opacity -= 0.025;
-                clickEffect.style.top = startY + 'px';
-                clickEffect.style.opacity = opacity;
-                if (opacity <= 0) {
-                    clearInterval(interval);
-                    clickEffect.style.opacity = 0;
-                }
-            }, 20);
+            localStorage.setItem('caseCoins', coins);
         }
-        // ---- ОБРАБОТЧИКИ НАЖАТИЙ ----
-        // Нажатие на персонажа (через Raycaster)
-        const raycaster = new THREE.Raycaster();
-        const pointer = new THREE.Vector2();
-        function onPointerDown(event) {
-            const clientX = event.clientX || event.touches?.[0]?.clientX;
-            const clientY = event.clientY || event.touches?.[0]?.clientY;
-            if (clientX === undefined) return;
-            const rect = renderer.domElement.getBoundingClientRect();
-            pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
-            pointer.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+        updateCoins();
+        function saveInventory() {
+            localStorage.setItem('caseInventory', JSON.stringify(inventory));
+        }
+        // ---- ОТРИСОВКА КЕЙСОВ ----
+        function renderCases() {
+            const container = document.getElementById('cases');
+            container.innerHTML = cases.map(c => `
+                <div class="case" data-id="${c.id}">
+                    <div class="case-glow"></div>
+                    <div class="case-emoji">${c.emoji}</div>
+                    <div class="case-name">${c.name}</div>
+                    <div class="case-price">🪙 ${c.price}</div>
+                    <div class="case-rarity rarity-${c.rarity}">${rarities[c.rarity].name}</div>
+                </div>
+            `).join('');
 
-raycaster.setFromCamera(pointer, camera);
-            const intersects = raycaster.intersectObjects(character.children, true);
-            if (intersects.length > 0) {
-                addCoin(event);
-                // Небольшая вибрация (если поддерживается)
-                if (navigator.vibrate) navigator.vibrate(20);
+   container.querySelectorAll('.case').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = el.dataset.id;
+                    openCase(id);
+                });
+            });
+        }
+        // ---- ОТКРЫТИЕ КЕЙСА ----
+        function openCase(id) {
+            const c = cases.find(x => x.id === id);
+            if (!c) return;
+            if (coins < c.price) {
+                document.getElementById('status').textContent = '❌ Недостаточно монет!';
+                setTimeout(() => document.getElementById('status').textContent = '🎰 Выбери кейс', 1500);
+                return;
             }
+            coins -= c.price;
+            updateCoins();
+            currentCase = c;
+            // Определяем выпавший предмет
+            const rarity = getRandomRarity(c.chances);
+            const items = allItems.filter(i => i.rarity === rarity);
+            const item = items[Math.floor(Math.random() * items.length)];
+            // Показываем рулетку
+            showRoulette(c, item);
         }
-        // Наведение мыши (для ПК) — по клику
-        renderer.domElement.addEventListener('click', onPointerDown);
-        // Для телефона — касание
-        renderer.domElement.addEventListener('touchstart', onPointerDown, { passive: true });
-        // ---- КНОПКИ ГАРДЕРОБА ----
-        document.querySelectorAll('#skinColors .color-dot').forEach(dot => {
-            dot.onclick = () => {
-                document.querySelectorAll('#skinColors .color-dot').forEach(d => d.classList.remove('active'));
-                dot.classList.add('active');
-                const c = new THREE.Color(dot.dataset.color);
-                head.material.color.set(c);
-                armL.material.color.set(c);
-                armR.material.color.set(c);
-                document.getElementById('status').textContent = '🎨 Цвет кожи изменён';
-                setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 1000);
-            };
-        });
-        document.querySelectorAll('#shirts .item-btn').forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll('#shirts .item-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                body.material.color.set(new THREE.Color(btn.dataset.shirt));
-                document.getElementById('status').textContent = '👕 Футболка надета';
-                setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 1000);
-            };
-        });
-        document.querySelectorAll('#pants .item-btn').forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll('#pants .item-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const c = new THREE.Color(btn.dataset.pants);
-                legL.material.color.set(c);
-                legR.material.color.set(c);
-                document.getElementById('status').textContent = '👖 Штаны надеты';
-                setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 1000);
-            };
-        });
-        document.querySelectorAll('#shoes .item-btn').forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll('#shoes .item-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const c = new THREE.Color(btn.dataset.shoes);
-                shoeL.material.color.set(c);
-                shoeR.material.color.set(c);
-                document.getElementById('status').textContent = '👟 Обувь надета';
-                setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 1000);
-            };
-        });
-        document.querySelectorAll('#accessories .item-btn').forEach(btn => {
-            btn.onclick = () => {
-                const type = btn.dataset.accessory;
-                if (type === 'hat') {
-                    hatGroup.visible = !hatGroup.visible;
-                    btn.style.borderColor = hatGroup.visible ? '#3498db' : 'transparent';
-                    document.getElementById('status').textContent = hatGroup.visible ? '🧢 Шляпа надета' : '🧢 Шляпа снята';
-                } else if (type === 'glasses') {
-                    glassesGroup.visible = !glassesGroup.visible;
-                    btn.style.borderColor = glassesGroup.visible ? '#3498db' : 'transparent';
-                    document.getElementById('status').textContent = glassesGroup.visible ? '👓 Очки надеты' : '👓 Очки сняты';
-                } else if (type === 'bowtie') {
-                    bowtieGroup.visible = !bowtieGroup.visible;
-                    btn.style.borderColor = bowtieGroup.visible ? '#3498db' : 'transparent';
-                    document.getElementById('status').textContent = bowtieGroup.visible ? '🎀 Бабочка надета' : '🎀 Бабочка снята';
-                }
-                setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 1200);
-            };
-        });
-        // ---- МЕНЮ ----
-        const menu = document.getElementById('wardrobeMenu');
-        document.getElementById('menuToggle').onclick = () => {
-            menu.classList.toggle('open');
-            document.getElementById('menuToggle').textContent = menu.classList.contains('open') ? '✕' : '👕';
-        };
-        document.getElementById('closeMenu').onclick = () => {
-            menu.classList.remove('open');
-            document.getElementById('menuToggle').textContent = '👕';
-        };
-        // ---- АДАПТАЦИЯ ----
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-        // ---- АНИМАЦИЯ ----
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
+        function getRandomRarity(chances) {
+            const roll = Math.random() * 100;
+            let cumulative = 0;
+            const order = ['legendary', 'epic', 'rare', 'common']; // от самого редкого
+            for (const r of order) {
+                cumulative += chances[r] || 0;
+                if (roll < cumulative) return r;
+            }
+            return 'common';
         }
-        animate();
-        setTimeout(() => {
-            document.getElementById('status').textContent = '👆 Нажми на персонажа!';
-            setTimeout(() => document.getElementById('status').textContent = '👤 Персонаж', 3000);
-        }, 500);
-    </script>
-</body>
-</html>
-
-
-
-
+        // ---- РУЛЕТКА ----
+        function showRoulette(c, winningItem) {
+            const container = document.getElementById('rouletteContainer');
+            const track = document.getElementById('rouletteTrack');
+            const resultDiv = document.getElementById('rouletteResult');
+            container.classList.add('active');
+            resultDiv.classList.remove('show');
+            // Генерируем ленту: 30 предметов + победный в середине
+            const items = [];
+            const all = [...allItems];
+            for (let i = 0; i < 30; i++) {
+                items.push(all[Math.floor(Math.random() * all.length)]);
+            }
+            // Вставляем победный предмет в позицию ~20
+            items[20] = winningItem;
+            // Отрисовка
+            track.innerHTML = items.map(item => {
+                const r = rarities[item.rarity];
+                returns`<div class="roulette-item ${item.rarity}">
+                    <div class="item-emoji">${item.emoji}</div>
+                    <div class="item-name">${item.name}</div>
+                </div>`;
+            }).join('');
+            // Сброс позиции
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0)';
+            void track.offsetWidth;
+            // Анимация
+            const itemWidth = 110; // 100px + 10px margin
+            const targetPos = -(20 * itemWidth) + (document.getElementById('rouletteWindow').offsetWidth / 2) - (itemWidth / 2);
+            track.style.transition = 'transform 6s cubic-bezier(0.1, 0.8, 0.1, 1)';
+            track.style.transform =
+            `translateX(${targetPos}px)`;
+            // Через 6 секунд показываем результат
+            setTimeout(() => {
+                resultDiv.classList.add('show');
+                const r = rarities[winningItem.rarity];
+                resultDiv.querySelector('.result-emoji').textContent = winningItem.emoji;
+                resultDiv.querySelector('.result-name').textContent = winningItem.name;
+                resultDiv.querySelector('.result-rarity').textContent = r.name;
+                resultDiv.querySelector('.result-rarity').className = 'result-rarity rarity-' + winningItem.rarity;
+                resultDiv.querySelector('.result-rarity').style.color = r.color;
+                // Сохраняем в инвентарь
+                inventory.push({ ...winningItem, sellPrice: winningItem.price });
+                saveInventory();
+                renderInventory();
+                // Обновляем статус
+                document.getElementById('status').textContent = `🎁 Выпало: ${winningItem.name}`;
+                setTimeout(() => document.getElementById('status').textContent = '🎰 Выбери кейс', 2000);
+            }, 6200);
+        }
+        // ---- ЗАКРЫТИЕ РУЛЕТКИ ----
+        document.getElementById('resultBtn').addEventListener('click', () => {
+            document.getElementById('rouletteContainer').classList.remove('active');
+            renderCases();
+        });
+        // ---- ИНВЕНТАРЬ ----
+        function renderInventory() {
+            const list = document.getElementById('inventoryList');
+            if (inventory.length === 0) {
+                list.innerHTML = '<div id="emptyInventory">Инвентарь пуст 😢</div>';
+                return;
+            }
+            list.innerHTML = inventory.map((item, index) => {
+                const r = rarities[item.rarity];
+                return `<div class="inventory-item ${item.rarity}">
+                    <div class="info
